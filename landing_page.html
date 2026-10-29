@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>shengup.me - Mandarin Pronunciation Practice</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome para iconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #e5e7eb; /* Fondo exterior sutil */
+        }
+
+        /* Estilos personalizados para emular exactamente el tono y bordes */
+        .card-bg {
+            background-color: #f7f9f7;
+        }
+
+        .audio-card-bg {
+            background-color: #1a1d26;
+        }
+
+        .accent-lime {
+            background-color: #ccff66;
+            color: #121808;
+        }
+
+        .accent-lime:hover {
+            background-color: #beee55;
+        }
+
+        /* Animación suave para la simulación de las barras de voz */
+        .waveform-bar {
+            transition: height 0.3s ease, background-color 0.3s ease;
+        }
+
+        .waveform-container:hover .waveform-bar {
+            animation: pulseWave 1.5s infinite ease-in-out alternate;
+        }
+
+        @keyframes pulseWave {
+            0% { transform: scaleY(0.85); }
+            100% { transform: scaleY(1.15); }
+        }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-4 md:p-8">
+
+    <!-- Tarjeta Principal Conteinere -->
+    <div class="w-full max-w-2xl card-bg rounded-3xl p-6 md:p-10 shadow-2xl border border-gray-200/60 flex flex-col justify-between transition-all">
+        
+        <!-- Navbar / Encabezado -->
+        <header class="flex items-center justify-between mb-8">
+            <!-- Logo Shengup.me -->
+            <div class="flex items-center space-x-2.5">
+                <div class="bg-black text-lime-400 p-2.5 rounded-xl flex items-center justify-center w-9 h-9">
+                    <i class="fa-solid fa-waveform text-base"></i>
+                </div>
+                <span class="font-bold text-gray-900 text-lg tracking-tight">shengup.me</span>
+            </div>
+
+            <!-- In development Badge -->
+            <span class="text-xs font-medium text-gray-500 bg-gray-200/70 px-3 py-1.5 rounded-full border border-gray-300/50">
+                In development
+            </span>
+        </header>
+
+        <!-- Sección de Título y Subtítulo -->
+        <div class="text-center mb-8">
+            <span class="text-xs tracking-wider uppercase text-gray-500 font-semibold mb-2 block">
+                Mandarin Pronunciation Practice
+            </span>
+            <h1 class="text-2xl md:text-3xl font-extrabold text-gray-900 tracking-tight mb-2">
+                Speak Chinese with more confidence.
+            </h1>
+            <p class="text-gray-500 text-sm md:text-base font-normal max-w-md mx-auto">
+                Record your voice, explore your tones, and understand your Mandarin pronunciation.
+            </p>
+        </div>
+
+        <!-- Tarjeta Interactiva con Audio Waveform -->
+        <div class="audio-card-bg rounded-2xl p-6 md:p-8 text-center text-white relative overflow-hidden mb-6 shadow-inner group cursor-pointer" id="waveformCard">
+            <!-- Texto Chino y Pinyin -->
+            <div class="mb-6">
+                <h2 class="text-2xl md:text-3xl font-medium tracking-wide mb-1 text-gray-100">
+                    我在学中文
+                </h2>
+                <p class="text-gray-400 text-sm font-light tracking-wide">
+                    wǒ zài xué zhōng wén
+                </p>
+            </div>
+
+            <!-- Gráfico de Forma de Onda (Waveform Canvas/HTML) -->
+            <div class="relative w-full h-36 my-4 flex items-center justify-between px-2 md:px-6 waveform-container" id="barContainer">
+                <!-- Líneas Guía Discontinuas de Tono (Líneas amarillas verticales) -->
+                <div class="absolute inset-y-2 left-[20%] border-r-2 border-dashed border-amber-400/80 z-10 pointer-events-none"></div>
+                <div class="absolute inset-y-2 left-[39%] border-r-2 border-dashed border-amber-400/80 z-10 pointer-events-none"></div>
+                <div class="absolute inset-y-2 left-[58%] border-r-2 border-dashed border-amber-400/80 z-10 pointer-events-none"></div>
+                <div class="absolute inset-y-2 left-[77%] border-r-2 border-dashed border-amber-400/80 z-10 pointer-events-none"></div>
+
+                <!-- Las barras se generan dinámicamente con JS para simular fielmente el diseño -->
+            </div>
+
+            <!-- Leyenda Inferior -->
+            <p class="text-xs text-gray-400 font-normal mt-4 transition-colors group-hover:text-gray-300">
+                An interactive look at Mandarin tones
+            </p>
+        </div>
+
+        <!-- Botón Call to Action -->
+        <button onclick="handleInterestClick()" class="w-full accent-lime font-bold py-4 px-6 rounded-2xl transition duration-200 flex flex-col items-center justify-center shadow-sm active:scale-[0.99]">
+            <div class="flex items-center space-x-2 text-base">
+                <i class="fa-regular fa-envelope"></i>
+                <span>I'm interested in testing</span>
+            </div>
+            <span class="text-xs font-normal opacity-80 mt-0.5">Early testers welcome</span>
+        </button>
+
+        <!-- Pie de página -->
+        <footer class="text-center mt-6">
+            <p class="text-xs text-gray-400 font-normal">
+                Built for Mandarin learners. Experimental tone analysis. Public testing is not yet available.
+            </p>
+        </footer>
+
+    </div>
+
+    <!-- Modal Simple de Agradecimiento -->
+    <div id="modal" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-2xl p-6 max-w-sm w-full text-center shadow-xl">
+            <div class="w-12 h-12 bg-lime-100 text-lime-700 rounded-full flex items-center justify-center mx-auto mb-4 text-xl">
+                <i class="fa-solid fa-check"></i>
+            </div>
+            <h3 class="text-lg font-bold text-gray-900 mb-2">¡Gracias por tu interés!</h3>
+            <p class="text-sm text-gray-600 mb-6">Te avisaremos tan pronto como la versión de prueba esté disponible.</p>
+            <button onclick="closeModal()" class="w-full bg-gray-900 text-white font-medium py-2.5 rounded-xl text-sm hover:bg-gray-800 transition">
+                Cerrar
+            </button>
+        </div>
+    </div>
+
+    <!-- Script para renderizar las barras dinámicamente según el patrón de la foto -->
+    <script>
+        // Alturas relativas para imitar el patrón de la captura (en porcentaje)
+        const barPattern = [
+            { h: 25, c: '#4ade80' }, { h: 35, c: '#2dd4bf' }, { h: 45, c: '#22d3ee' },
+            { h: 80, c: '#818cf8' }, { h: 95, c: '#6366f1' }, { h: 60, c: '#818cf8' },
+            { h: 40, c: '#34d399' }, { h: 50, c: '#2dd4bf' }, { h: 80, c: '#38bdf8' },
+            { h: 65, c: '#818cf8' }, { h: 90, c: '#6366f1' }, { h: 70, c: '#818cf8' },
+            { h: 50, c: '#60a5fa' }, { h: 40, c: '#34d399' }, { h: 55, c: '#2dd4bf' },
+            { h: 85, c: '#818cf8' }, { h: 95, c: '#34d399' }, { h: 60, c: '#2dd4bf' },
+            { h: 45, c: '#22d3ee' }, { h: 65, c: '#22d3ee' }, { h: 75, c: '#34d399' },
+            { h: 50, c: '#818cf8' }, { h: 85, c: '#818cf8' }, { h: 40, c: '#a78bfa' },
+            { h: 60, c: '#818cf8' }, { h: 75, c: '#34d399' }, { h: 80, c: '#2dd4bf' },
+            { h: 50, c: '#22d3ee' }, { h: 90, c: '#818cf8' }, { h: 100, c: '#6366f1' },
+            { h: 70, c: '#a78bfa' }, { h: 50, c: '#818cf8' }, { h: 35, c: '#34d399' },
+            { h: 45, c: '#2dd4bf' }
+        ];
+
+        const barContainer = document.getElementById('barContainer');
+
+        // Paleta de colores idéntica a la imagen (tonos morados/azulados y verdes/turquesas)
+        const colors = [
+            '#6ee7b7', '#34d399', '#2dd4bf', '#38bdf8', 
+            '#818cf8', '#6366f1', '#a78bfa', '#7c3aed'
+        ];
+
+        // Función para renderizar barras
+        function renderBars() {
+            barContainer.innerHTML = `
+                <div class="absolute inset-y-2 left-[20%] border-r-2 border-dashed border-amber-400/80 z-10 pointer-events-none"></div>
+                <div class="absolute inset-y-2 left-[39%] border-r-2 border-dashed border-amber-400/80 z-10 pointer-events-none"></div>
+                <div class="absolute inset-y-2 left-[58%] border-r-2 border-dashed border-amber-400/80 z-10 pointer-events-none"></div>
+                <div class="absolute inset-y-2 left-[77%] border-r-2 border-dashed border-amber-400/80 z-10 pointer-events-none"></div>
+            `;
+
+            barPattern.forEach((item, index) => {
+                const bar = document.createElement('div');
+                bar.className = 'waveform-bar w-1.5 md:w-2 rounded-full relative z-0';
+                bar.style.height = `${item.h}%`;
+                bar.style.backgroundColor = item.c;
+                bar.style.animationDelay = `${(index % 5) * 0.1}s`;
+                barContainer.appendChild(bar);
+            });
+        }
+
+        renderBars();
+
+        // Efecto interactivo al hacer click en la tarjeta de voz
+        document.getElementById('waveformCard').addEventListener('click', () => {
+            const bars = document.querySelectorAll('.waveform-bar');
+            bars.forEach(bar => {
+                const randomHeight = Math.floor(Math.random() * 75) + 20;
+                bar.style.height = `${randomHeight}%`;
+            });
+        });
+
+        // Controladores del Modal
+        function handleInterestClick() {
+            document.getElementById('modal').classList.remove('hidden');
+            document.getElementById('modal').classList.add('flex');
+        }
+
+        function closeModal() {
+            document.getElementById('modal').classList.add('hidden');
+            document.getElementById('modal').classList.remove('flex');
+        }
+    </script>
+</body>
+</html>
