@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -47,6 +47,15 @@
             0% { transform: scaleY(0.85); }
             100% { transform: scaleY(1.15); }
         }
+
+        #modal { border: 1px solid #e5e7eb; border-radius: 24px; padding: 24px; background: #f7f9f7; color: #111827; width: min(448px, calc(100% - 32px)); max-height: calc(100dvh - 32px); overflow-y: auto; box-shadow: 0 24px 64px #0003; }
+        #modal::backdrop { background: #0008; backdrop-filter: blur(4px); }
+        .waitlist-label { display: block; font-size: 14px; font-weight: 500; margin-bottom: 6px; }
+        .waitlist-input { display: block; width: 100%; min-height: 48px; border: 1px solid #d1d5db; border-radius: 12px; padding: 10px 12px; background: white; font: inherit; font-size: 16px; }
+        .waitlist-input:focus-visible, #modal button:focus-visible { outline: 3px solid #84cc16; outline-offset: 3px; }
+        #waitlist-fields { border: 0; padding: 0; margin: 0; min-width: 0; }
+        #waitlist-submit:disabled { opacity: .65; cursor: wait; }
+        .waitlist-honeypot { display: none; }
     </style>
 </head>
 <body class="min-h-screen flex items-center justify-center p-4 md:p-8">
@@ -113,7 +122,7 @@
         </div>
 
         <!-- Botón Call to Action -->
-        <button onclick="handleInterestClick()" class="w-full accent-lime font-bold py-4 px-6 rounded-2xl transition duration-200 flex flex-col items-center justify-center shadow-sm active:scale-[0.99]">
+        <button id="waitlist-open" type="button" aria-haspopup="dialog" aria-controls="modal" onclick="handleInterestClick()" class="w-full accent-lime font-bold py-4 px-6 rounded-2xl transition duration-200 flex flex-col items-center justify-center shadow-sm active:scale-[0.99]">
             <div class="flex items-center space-x-2 text-base">
                 <i class="fa-regular fa-envelope"></i>
                 <span>I'm interested in testing</span>
@@ -130,19 +139,46 @@
 
     </div>
 
-    <!-- Modal Simple de Agradecimiento -->
-    <div id="modal" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
-        <div class="bg-white rounded-2xl p-6 max-w-sm w-full text-center shadow-xl">
-            <div class="w-12 h-12 bg-lime-100 text-lime-700 rounded-full flex items-center justify-center mx-auto mb-4 text-xl">
-                <i class="fa-solid fa-check"></i>
-            </div>
-            <h3 class="text-lg font-bold text-gray-900 mb-2">¡Gracias por tu interés!</h3>
-            <p class="text-sm text-gray-600 mb-6">Te avisaremos tan pronto como la versión de prueba esté disponible.</p>
-            <button onclick="closeModal()" class="w-full bg-gray-900 text-white font-medium py-2.5 rounded-xl text-sm hover:bg-gray-800 transition">
-                Cerrar
-            </button>
+    <!-- Beta waitlist: the public endpoint is not a private credential. -->
+    <dialog id="modal" aria-labelledby="waitlist-title" aria-describedby="waitlist-description">
+        <div class="flex items-start justify-between gap-4 mb-2">
+            <h2 id="waitlist-title" class="text-xl font-bold tracking-tight">Join the Shengup beta</h2>
+            <button type="button" onclick="closeModal()" aria-label="Close waitlist form" class="rounded-lg w-9 h-9 flex items-center justify-center text-gray-500 hover:bg-gray-200 shrink-0">&times;</button>
         </div>
-    </div>
+        <p id="waitlist-description" class="text-sm text-gray-500 mb-6">Be the first to try Shengup.</p>
+        <form id="waitlist-form" action="https://formspree.io/f/xeaazdpy" method="POST">
+            <fieldset id="waitlist-fields">
+                <div class="mb-4">
+                    <label for="waitlist-email" class="waitlist-label">Email <span class="text-gray-500">(required)</span></label>
+                    <input class="waitlist-input" id="waitlist-email" type="email" name="email" autocomplete="email" maxlength="254" required autofocus>
+                </div>
+                <div class="mb-4">
+                    <label for="waitlist-name" class="waitlist-label">Name <span class="text-gray-500">(optional)</span></label>
+                    <input class="waitlist-input" id="waitlist-name" type="text" name="name" autocomplete="name" maxlength="120">
+                </div>
+                <div class="mb-5">
+                    <label for="waitlist-role" class="waitlist-label">I am a:</label>
+                    <select class="waitlist-input" id="waitlist-role" name="role">
+                        <option value="">Select an option</option>
+                        <option>Mandarin learner</option>
+                        <option>Native Chinese speaker</option>
+                        <option>Mandarin teacher</option>
+                        <option>Other</option>
+                    </select>
+                </div>
+                <div class="waitlist-honeypot" aria-hidden="true">
+                    <label for="waitlist-website">Leave this field empty</label>
+                    <input id="waitlist-website" type="text" name="_gotcha" tabindex="-1" autocomplete="off">
+                </div>
+                <input type="hidden" name="source" value="Shengup beta waitlist — shengup.me">
+                <input type="hidden" name="_subject" value="Shengup Beta Waitlist">
+                <button id="waitlist-submit" type="submit" class="w-full accent-lime font-bold py-3 px-4 rounded-xl transition">Join the beta waitlist</button>
+            </fieldset>
+            <p id="waitlist-error" role="alert" class="text-sm text-red-700 mt-4" hidden></p>
+            <p id="waitlist-success" role="status" tabindex="-1" class="text-base text-gray-800 my-5" hidden>You're on the list! We'll contact you when Shengup is ready for testing.</p>
+        </form>
+        <p class="text-xs text-gray-500 leading-relaxed mt-4">We'll only use your details to contact you about Shengup. You can request deletion by replying to any email from us.</p>
+    </dialog>
 
     <!-- Script para renderizar las barras dinámicamente según el patrón de la foto -->
     <script>
@@ -200,16 +236,64 @@
             });
         });
 
-        // Controladores del Modal
+        const waitlistDialog = document.getElementById('modal');
+        const waitlistForm = document.getElementById('waitlist-form');
+        const waitlistFields = document.getElementById('waitlist-fields');
+        const waitlistSubmit = document.getElementById('waitlist-submit');
+        const waitlistError = document.getElementById('waitlist-error');
+        const waitlistSuccess = document.getElementById('waitlist-success');
+        let waitlistPending = false;
         function handleInterestClick() {
-            document.getElementById('modal').classList.remove('hidden');
-            document.getElementById('modal').classList.add('flex');
+            waitlistDialog.showModal();
+            if (!waitlistSuccess.hidden) waitlistSuccess.focus();
         }
-
-        function closeModal() {
-            document.getElementById('modal').classList.add('hidden');
-            document.getElementById('modal').classList.remove('flex');
-        }
+        function closeModal() { waitlistDialog.close(); }
+        waitlistDialog.addEventListener('close', () => {
+            document.getElementById('waitlist-open').focus();
+        });
+        waitlistForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            if (waitlistPending || !waitlistForm.reportValidity()) return;
+            waitlistError.hidden = true;
+            waitlistError.textContent = '';
+            const body = new FormData(waitlistForm);
+            waitlistPending = true;
+            waitlistFields.disabled = true;
+            waitlistSubmit.textContent = 'Joining…';
+            waitlistForm.setAttribute('aria-busy', 'true');
+            const controller = new AbortController();
+            const timeout = setTimeout(() => controller.abort(), 20000);
+            try {
+                const response = await fetch(waitlistForm.action, {
+                    method: 'POST', body,
+                    headers: { Accept: 'application/json' },
+                    signal: controller.signal
+                });
+                if (!response.ok) {
+                    const message = response.status === 429
+                        ? 'Too many attempts right now. Please wait a few minutes and try again.'
+                        : "We couldn't add you to the list. Please check your email address and try again.";
+                    throw new Error(message);
+                }
+                waitlistForm.reset();
+                waitlistFields.hidden = true;
+                waitlistSuccess.hidden = false;
+                if (waitlistDialog.open) waitlistSuccess.focus();
+            } catch (error) {
+                waitlistError.textContent = error.name === 'AbortError'
+                    ? "We couldn't confirm your submission in time. Please check your connection and try again."
+                    : error instanceof TypeError
+                        ? "We couldn't connect. Please check your connection and try again."
+                        : error.message;
+                waitlistError.hidden = false;
+            } finally {
+                clearTimeout(timeout);
+                waitlistPending = false;
+                waitlistFields.disabled = false;
+                waitlistSubmit.textContent = 'Join the beta waitlist';
+                waitlistForm.removeAttribute('aria-busy');
+            }
+        });
     </script>
 </body>
 </html>
